@@ -101,3 +101,6 @@ C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\Microsoft.Threading.
 C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\System.Net.Http.Extensions.xml
 C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\System.Net.Http.Primitives.xml
 C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\Zlib.Portable.xml
+C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\Google.Apis.Analytics.v3.dll
+C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\Google.Apis.Analytics.v3.pdb
+C:\Users\OI\Documents\GIT\OAuthDemo\OAuthDemo\OAuthDemo\bin\Google.Apis.Analytics.v3.xml

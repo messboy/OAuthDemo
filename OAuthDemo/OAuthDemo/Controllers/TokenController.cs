@@ -1,4 +1,4 @@
-﻿using Facebook;
+﻿using System.Configuration;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -7,47 +7,23 @@ using System.Web.Mvc;
 
 namespace OAuthDemo.Controllers
 {
-    public class HomeController : Controller
+    public class TokenController : Controller
     {
+        // GET: Token
         public ActionResult Index()
         {
-            return View();
-        }
+            string _oauthUrl = string.Format("https://accounts.google.com/o/oauth2/auth?" + "scope={0}&state={1}&redirect_uri={2}&response_type=code&client_id={3}&approval_prompt=force",
+                        HttpUtility.UrlEncode("https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner"),
+                        "",
+                        HttpUtility.UrlEncode("http://localhost:7115/"),
+                        HttpUtility.UrlEncode("902116665022-co28khijsesjpmqoadulnbke2vmkc3hb.apps.googleusercontent.com"));
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
+            return Redirect(_oauthUrl);
 
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
-        public ActionResult Demo()
-        {
-            return View();
-        }
-
-        public JsonResult FacebookLogin(string token)
-        {
-            var client = new FacebookClient(token);
-            dynamic result = client.Get("me", new { fields = "name,id,email" });
-            string name = result.name;
-            string id = result.id;
-            return Json(name, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult GoogleLogin(string token)
-        {
-            string param = string.Format("id_token={0}", token);
-            byte[] bs = Encoding.ASCII.GetBytes(param);
+            byte[] bs = Encoding.ASCII.GetBytes(_oauthUrl);
             string result = string.Empty;
 
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create("https://www.googleapis.com/oauth2/v3/tokeninfo");
+            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create("https://accounts.google.com/o/oauth2/auth?");
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
             req.ContentLength = bs.Length;
@@ -65,29 +41,29 @@ namespace OAuthDemo.Controllers
 
                     //TODO 驗證aud & email 驗證都正確才算通過
                 }
-                
+
             }
 
 
             return Json(result, JsonRequestBehavior.AllowGet);
+
+
+            return Redirect(_oauthUrl);
         }
 
-        //oauth2callback
-        public ActionResult oauth2callback()
+        public ActionResult callback()
         {
             string queryStringFormat = @"code={0}&client_id={1}&client_secret={2}&redirect_uri={3}&grant_type=authorization_code";
             string postcontents = string.Format(queryStringFormat
                                                , HttpUtility.UrlEncode(Request["Code"])
-                                               , HttpUtility.UrlEncode("902116665022-co28khijsesjpmqoadulnbke2vmkc3hb.apps.googleusercontent.com")
-                                               , HttpUtility.UrlEncode("jJ469gR_acVPai4ClXuccLUi")
-                                               , HttpUtility.UrlEncode("http://localhost:7115//Home/oauth2callback"));
+                                               , HttpUtility.UrlEncode(ConfigurationSettings.AppSettings.Get("GoogleClientID"))
+                                               , HttpUtility.UrlEncode("ygcZU7FckhWa75-G53zDoogc")
+                                               , HttpUtility.UrlEncode("http://localhost:1077/Default.aspx"));
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://accounts.google.com/o/oauth2/token");
             request.Method = "POST";
             byte[] postcontentsArray = Encoding.UTF8.GetBytes(postcontents);
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = postcontentsArray.Length;
-
-            string responseFromServer = string.Empty;
             using (Stream requestStream = request.GetRequestStream())
             {
                 requestStream.Write(postcontentsArray, 0, postcontentsArray.Length);
@@ -96,7 +72,7 @@ namespace OAuthDemo.Controllers
                 using (Stream responseStream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(responseStream))
                 {
-                    responseFromServer = reader.ReadToEnd();
+                    string responseFromServer = reader.ReadToEnd();
                     reader.Close();
                     responseStream.Close();
                     response.Close();
@@ -104,8 +80,7 @@ namespace OAuthDemo.Controllers
                 }
             }
 
-            return View(responseFromServer);
-
+            return View();
         }
     }
 }
