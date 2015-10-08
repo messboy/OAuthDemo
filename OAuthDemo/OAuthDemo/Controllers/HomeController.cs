@@ -1,11 +1,7 @@
 ﻿using Facebook;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 
 namespace OAuthDemo.Controllers
@@ -65,7 +61,27 @@ namespace OAuthDemo.Controllers
                 using (StreamReader myStreamReader = new StreamReader(wr.GetResponseStream()))
                 {
                     result = myStreamReader.ReadToEnd();
-                }
+
+                    //TODO 驗證aud & email 驗證都正確才算通過
+
+                    //    "iss": "accounts.google.com",
+                    //     "at_hash": "Dn3kUsH2goJMfq5N6TqReA",
+                    //     "aud": "902116665022-co28khijsesjpmqoadulnbke2vmkc3hb.apps.googleusercontent.com",
+                    //     "sub": "105928066147029190178",
+                    //     "email_verified": "true",
+                    //     "azp": "902116665022-co28khijsesjpmqoadulnbke2vmkc3hb.apps.googleusercontent.com",
+                    //     "hd": "brightideas.com.tw",
+                    //     "email": "simon@brightideas.com.tw",
+                    //     "iat": "1444283819",
+                    //     "exp": "1444287419",
+                    //     "name": "陳--",
+                    //     "given_name": "昱元",
+                    //     "family_name": "陳",
+                    //     "locale": "zh-TW",
+                    //     "alg": "RS256",
+                    //     "kid": "9015759ea37707cb6d325cca00e6299231b7f72f"
+}
+                
             }
 
 

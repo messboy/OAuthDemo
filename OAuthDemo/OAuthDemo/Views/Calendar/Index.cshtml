@@ -1,0 +1,15 @@
+﻿@model Google.Apis.Calendar.v3.Data.Events 
+
+
+<h2>日曆事件</h2>
+
+ @if (Model.Items != null && Model.Items.Count > 0)
+{
+    foreach (var eventItem in Model.Items)
+    {
+        <span>@eventItem.Start.Date : &emsp;</span> 
+        <span>@eventItem.Summary</span>
+         <br/>
+
+     }
+ }
