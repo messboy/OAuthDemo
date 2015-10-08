@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Demo";
+}
+
+
+
+<script src="https://connect.facebook.net/en_US/all.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+<h2>Demo</h2>
+
+@* google 登入 *@
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+<a href="#" onclick="signOut();">Sign out</a>
+
+
+<hr />
+
+@* 分享與按讚功能 *@
+<div class="fb-like"
+     data-share="true"
+     data-width="450"
+     data-show-faces="true">
+</div>
+
+<div class="fb-login-button" scope="public_profile,email" data-show-faces="true" data-width="400" data-max-rows="1"></div>
+<a href="#" onclick="fbLogout();">FB Sign out</a>
+<div id="fb-root"></div>
+
+
+<script>
+
+    @* For Google *@
+    function onSignIn(googleUser) {
+      //千萬不要把ID傳回server,請傳token即可
+      var profile = googleUser.getBasicProfile();
+      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+      console.log('Name: ' + profile.getName());
+      console.log('Image URL: ' + profile.getImageUrl());
+      console.log('Email: ' + profile.getEmail());
+
+      var id_token = googleUser.getAuthResponse().id_token;
+      console.log(id_token);
+      var data = {
+          token: id_token
+      }
+        ajaxServer('Home/GoogleLogin', data);
+    }
+
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+
+
+@* For FB *@
+  window.fbAsyncInit = function() {
+    FB.init({
+        appId: '869957489767520', // App ID
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml: true,  // parse XFBML
+      version: 'v2.4'
+    });
+
+      // Additional initialization code here
+    FB.Event.subscribe('auth.authResponseChange', function (response) {
+        if (response.status === 'connected') {
+            // the user is logged in and has authenticated your
+            // app, and response.authResponse supplies
+            // the user's ID, a valid access token, a signed
+            // request, and the time the access token
+            // and signed request each expire
+            var uid = response.authResponse.userID;
+            var accessToken = response.authResponse.accessToken;
+            var data = {
+                token: accessToken
+            }
+            // TODO: Handle the access token
+            console.log(uid);
+            console.log(accessToken);
+            ajaxServer('Home/FacebookLogin', data);
+        } else if (response.status === 'not_authorized') {
+            // the user is logged in to Facebook,
+            // but has not authenticated your app
+        } else {
+            // the user isn't logged in to Facebook.
+        }
+    });
+  };
+
+  
+
+  function fbLogout() {
+      FB.logout(function (response) {
+          window.location.reload();
+          // user is now logged out
+      });
+  }
+
+  // Load the SDK Asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+
+  }(document));
+
+  function ajaxServer(url, data) {
+      $.ajax({
+          url: url,
+          data: data,
+          type: "POST",
+          dataType: 'json',
+          success: function (msg) {
+              alert(msg);
+          },
+
+          error: function (xhr, ajaxOptions, thrownError) {
+              alert(xhr.status);
+              alert(thrownError);
+          }
+      });
+  }
+</script>
